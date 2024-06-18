@@ -1,0 +1,62 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model CustomerType {
+  createdAt DateTime   @default(now())
+  customers Customer[]
+  id        String     @id @default(cuid())
+  typeName  String?
+  updatedAt DateTime   @updatedAt
+}
+
+model Customer {
+  createdAt      DateTime      @default(now())
+  customerType   CustomerType? @relation(fields: [customerTypeId], references: [id])
+  customerTypeId String?
+  dateOfBirth    DateTime?
+  email          String        @unique
+  id             String        @id @default(cuid())
+  name           String?
+  phone          String
+  tickets        Ticket[]
+  updatedAt      DateTime      @updatedAt
+}
+
+model Fee {
+  amount    Float?
+  createdAt DateTime  @default(now())
+  datePaid  DateTime?
+  id        String    @id @default(cuid())
+  ticket    Ticket?   @relation(fields: [ticketId], references: [id])
+  ticketId  String?
+  updatedAt DateTime  @updatedAt
+}
+
+model Event {
+  createdAt DateTime  @default(now())
+  date      DateTime?
+  eventName String?
+  id        String    @id @default(cuid())
+  location  String?
+  tickets   Ticket[]
+  updatedAt DateTime  @updatedAt
+}
+
+model Ticket {
+  createdAt  DateTime  @default(now())
+  customer   Customer? @relation(fields: [customerId], references: [id])
+  customerId String?
+  event      Event?    @relation(fields: [eventId], references: [id])
+  eventId    String?
+  fees       Fee[]
+  id         String    @id @default(cuid())
+  price      Float?
+  seatNumber String?
+  updatedAt  DateTime  @updatedAt
+}
